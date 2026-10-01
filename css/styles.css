@@ -1,0 +1,175 @@
+/*
+  styles.css — how everything looks.
+
+  COLORS: every color is a "variable" defined once in :root below
+  (like --accent). To change a color everywhere, change it here.
+  The second block (@media prefers-color-scheme: dark) swaps in the
+  dark-mode versions automatically when your phone is in dark mode.
+*/
+
+:root {
+  --bg: #f2f2f7;          /* page background (light gray, like iOS Settings) */
+  --surface: #ffffff;     /* cards */
+  --text: #1c1c1e;        /* main text */
+  --muted: #6e6e73;       /* secondary text */
+  --border: #d1d1d6;      /* thin lines */
+  --accent: #8c1515;      /* Stanford-ish cardinal red: buttons, active tab */
+  --accent-text: #ffffff; /* text on top of accent-colored things */
+  --success: #248a3d;     /* "complete" */
+  --warning: #b25000;     /* "in progress" */
+  --radius: 12px;         /* corner roundness of cards */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --text: #f2f2f7;
+    --muted: #98989d;
+    --border: #38383a;
+    --accent: #ff6961;
+    --accent-text: #000000;
+    --success: #30d158;
+    --warning: #ff9f0a;
+  }
+}
+
+/* ---------- Page basics ---------- */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* -apple-system = the iPhone's own font (San Francisco) */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ---------- Top bar ---------- */
+
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  /* env(safe-area-inset-top) = extra space so we don't sit under the notch */
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 8px;
+}
+
+.top-bar h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* ---------- Main content area ---------- */
+
+main {
+  padding: 8px 16px;
+  /* leave room at the bottom so the tab bar doesn't cover content */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 90px);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ---------- Bottom tab bar ---------- */
+
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 equal-width tabs */
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom); /* space for the iPhone home bar */
+}
+
+.tab-bar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 0 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 11px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab-bar svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor; /* icon uses the same color as the label */
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* The tab you're on is highlighted (app.js adds the "active" class) */
+.tab-bar a.active { color: var(--accent); }
+
+/* ---------- Cards ---------- */
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.card h2 { margin: 0 0 8px; font-size: 20px; }
+.card h3 { margin: 0 0 4px; font-size: 15px; color: var(--muted); font-weight: 600; }
+.card p  { margin: 0 0 8px; }
+.card p:last-child { margin-bottom: 0; }
+
+.muted { color: var(--muted); font-size: 14px; }
+
+.big-number {
+  font-size: 40px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* "Coming in Step N" label on placeholder screens */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ---------- Forms ---------- */
+
+.field { display: block; margin-bottom: 12px; }
+.field > span { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  /* 16px or bigger stops iPhone from zooming in when you tap a box */
+  font-size: 16px;
+  font-family: inherit;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.status-ok { color: var(--success); }
+.status-error { color: var(--accent); }

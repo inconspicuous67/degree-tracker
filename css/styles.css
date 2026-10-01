@@ -258,3 +258,6 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
 .glance-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 .glance-chips:empty { display: none; }
 .glance-chips .mini-c { font-size: 11px; padding: 2px 6px; }
+
+/* secondary buttons inside a card need a fill to look like buttons */
+.card .btn.secondary { background: var(--surface2); }

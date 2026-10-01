@@ -200,3 +200,24 @@ Plan → **All** shows all four years as a grid (Autumn · Winter · Spring per 
 
 ### If your phone shows an old version
 Phones keep copies of website files. Close the app fully and reopen it, then check the version in Settings.
+
+---
+
+## Step 7 (moved up) — Always up to date, offline, icon, backups
+
+### The problem we hit
+Your phone kept showing old screens after an upload. GitHub tells browsers "you may reuse this file for 10 minutes," and phones (especially Home Screen apps) often hold on longer. The site was right; your phone was using saved copies.
+
+### The fix: a service worker (`sw.js`)
+A service worker is a small script the browser runs in the background, sitting between the app and the internet. Ours uses **network first**:
+- **Online:** always ask GitHub for each file. If nothing changed, GitHub just answers "same as before," so it's fast. Save a copy and use it.
+- **Offline:** use the saved copy, so the app opens without a connection.
+
+We tested both: changing a file showed up on a normal reload, and with the server switched off the app still opened.
+
+### Also added
+- **App icon:** `scripts/make_icon.py` draws `icon-*.png` (a progress ring on Stanford cardinal) with plain Python. `manifest.webmanifest` tells phones the app's name, icon and colors.
+- **Backup / restore** (Settings): "Back up my data" saves a `.json` file of everything, and "Restore" loads one. Backups never upload to GitHub, because `.gitignore` blocks `*backup*.json`. Still, keep them out of the project folder.
+
+### One-time step after this update
+The first time, your phone has to get the new `index.html` that starts the service worker. Close the app fully, reopen it, and check Settings says **3.2**. After that, updates arrive on their own.

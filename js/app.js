@@ -72,3 +72,9 @@ function showCurrentScreen() {
 
 window.addEventListener('hashchange', showCurrentScreen);
 showCurrentScreen();
+
+// Start the service worker (sw.js): keeps the app up to date when online
+// and lets it open offline. Older browsers without support just skip this.
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch((error) => console.warn('Service worker:', error));
+}

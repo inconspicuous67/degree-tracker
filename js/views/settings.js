@@ -2,7 +2,7 @@
   views/settings.js — the Settings screen (opened from the gear on Home).
 */
 
-import { emptyData } from '../storage.js';
+import { emptyData, loadData } from '../storage.js';
 import { currentTerm } from '../terms.js';
 import { APP_VERSION } from '../utils.js';
 
@@ -35,7 +35,12 @@ export function render(container, app) {
     <div class="section-h"><h2>Your data</h2></div>
     <div class="card">
       <p>Everything is saved on this phone only. No account, no server.</p>
-      <p class="muted">${app.data.classes.length} classes saved.</p>
+      <p class="muted">${app.data.classes.length} class${app.data.classes.length === 1 ? '' : 'es'} saved.</p>
+      <button class="btn secondary" id="export">Back up my data</button>
+      <label class="btn secondary" style="display:block">Restore from a backup
+        <input id="import" type="file" accept=".json,application/json" hidden></label>
+      <p class="muted small">A backup is a small file saved to your phone (Files app). Keep it
+        somewhere safe, like iCloud Drive, but NOT in the degree-tracker project folder.</p>
       <button class="btn danger" id="clear">Erase all my data</button>
     </div>
 
@@ -61,6 +66,33 @@ export function render(container, app) {
   classOf.addEventListener('change', () => {
     settings.classOf = classOf.value ? Number(classOf.value) : null;
     saved();
+  });
+
+  // Backup: turn your data into a file and "download" it
+  container.querySelector('#export').addEventListener('click', () => {
+    const file = new Blob([JSON.stringify(app.data, null, 2)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(file);
+    link.download = `degree-tracker-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  // Restore: read a backup file and replace the current data with it
+  container.querySelector('#import').addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    try {
+      const backup = JSON.parse(await file.text());
+      if (!Array.isArray(backup.classes) || typeof backup.settings !== 'object') throw new Error('not a backup');
+      if (!confirm(`Replace everything in the app with this backup (${backup.classes.length} classes)?`)) return;
+      app.data = backup;
+      app.save();
+      app.data = loadData(); // reload so any missing sections get filled in
+      app.go('#home');
+    } catch {
+      alert("That file isn't a Degree Tracker backup.");
+    }
   });
 
   container.querySelector('#clear').addEventListener('click', () => {

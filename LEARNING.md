@@ -185,3 +185,18 @@ Then commit and push in GitHub Desktop.
 ### Try it yourself
 - **Add a general requirement:** copy one of the `{ type: 'tags', ... }` lines in `js/general-reqs.js` and change the name, tag and count.
 - **Change the short label** in the Reqs switcher (e.g. "MS&E"): see `shortName()` at the bottom of `js/views/requirements.js`.
+
+---
+
+## Step 3.1 — Plan overview (inspired by OnCourse)
+
+### What it is
+Plan → **All** shows all four years as a grid (Autumn · Winter · Spring per row, with the current quarter outlined), plus an **"at a glance"** panel: units, each of your majors/minors, and Stanford's general requirements. Each requirement lists the courses filling it, as color chips (green done, gold now, red planned). On an iPad or laptop, the panel sits beside the grid. On a phone, it sits below.
+
+### Decisions and why
+- **It reuses the requirements engine.** The overview doesn't calculate anything new. It calls the same `evaluateProgram()` as the Reqs tab and displays the `matched` classes. Because of that, the overview and the Reqs tab can never disagree.
+- **Side-by-side only on wide screens.** CSS `@media (min-width: 900px)` switches the layout to two columns. Phones get one column, because two would be too cramped.
+- **A version label in Settings** (`APP_VERSION` in `js/utils.js`) lets you check which version your phone is running. Bump it when you upload a change.
+
+### If your phone shows an old version
+Phones keep copies of website files. Close the app fully and reopen it, then check the version in Settings.

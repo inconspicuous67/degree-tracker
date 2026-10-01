@@ -4,6 +4,7 @@
 
 import { emptyData } from '../storage.js';
 import { currentTerm } from '../terms.js';
+import { APP_VERSION } from '../utils.js';
 
 export function render(container, app) {
   const { settings } = app.data;
@@ -38,7 +39,8 @@ export function render(container, app) {
       <button class="btn danger" id="clear">Erase all my data</button>
     </div>
 
-    <p class="muted small">Course information from Stanford ExploreCourses (2026–27).
+    <p class="muted small">App version ${APP_VERSION}.<br>
+      Course information from Stanford ExploreCourses (2026–27).
       Not an official Stanford app. Always confirm with your degree progress report.</p>
   `;
 

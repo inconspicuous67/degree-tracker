@@ -2,6 +2,10 @@
   utils.js — small helper tools shared by many screens.
 */
 
+// Shown in Settings so you can tell which version your phone is running.
+// Bump this each time you upload a change.
+export const APP_VERSION = '3.1 — Plan overview';
+
 // Makes text safe to put inside HTML. Without this, a course title like
 // "<b>Intro" would be treated as HTML code instead of plain text.
 // RULE OF THUMB: any text from you, a file, or the catalog goes through this.

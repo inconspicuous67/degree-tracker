@@ -2,35 +2,49 @@
   styles.css — how everything looks.
 
   COLORS: every color is a "variable" defined once in :root below
-  (like --accent). To change a color everywhere, change it here.
-  The second block (@media prefers-color-scheme: dark) swaps in the
-  dark-mode versions automatically when your phone is in dark mode.
+  (like --accent). Change it here and it changes everywhere.
+  The @media (prefers-color-scheme: dark) block swaps in dark-mode
+  colors automatically when your phone is in dark mode.
+
+  Stanford colors used: Cardinal red (#8c1515), Palo Alto green (#175e54).
 */
 
 :root {
-  --bg: #f2f2f7;          /* page background (light gray, like iOS Settings) */
-  --surface: #ffffff;     /* cards */
-  --text: #1c1c1e;        /* main text */
-  --muted: #6e6e73;       /* secondary text */
-  --border: #d1d1d6;      /* thin lines */
-  --accent: #8c1515;      /* Stanford-ish cardinal red: buttons, active tab */
-  --accent-text: #ffffff; /* text on top of accent-colored things */
-  --success: #248a3d;     /* "complete" */
-  --warning: #b25000;     /* "in progress" */
-  --radius: 12px;         /* corner roundness of cards */
+  --bg: #f4f5f9;          /* page background */
+  --surface: #ffffff;     /* cards and lists */
+  --surface2: #eef0f6;    /* tracks, inputs, subtle fills */
+  --text: #111827;        /* main text */
+  --muted: #6b7280;       /* secondary text */
+  --line: #e5e7eb;        /* thin dividers */
+  --accent: #8c1515;      /* Stanford cardinal: buttons, active tab */
+  --accent2: #b1040e;     /* brighter cardinal: end of gradients */
+  --accent-soft: #f9eded; /* pale cardinal background (insight box) */
+  --on-accent: #ffffff;   /* text on top of accent-colored buttons */
+  --ok: #175e54;          /* "done" — Palo Alto green */
+  --ok-soft: #e1efe9;
+  --prog: #a8730a;        /* "in progress" — gold */
+  --prog-soft: #fbf1d9;
+  --plan: #8c1515;        /* "planned" */
+  --radius: 16px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;
-    --surface: #1c1c1e;
-    --text: #f2f2f7;
-    --muted: #98989d;
-    --border: #38383a;
-    --accent: #ff6961;
-    --accent-text: #000000;
-    --success: #30d158;
-    --warning: #ff9f0a;
+    --bg: #0b0c10;
+    --surface: #16181d;
+    --surface2: #1f2229;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --line: #2a2d35;
+    --accent: #e5605f;
+    --accent2: #f08a7e;
+    --accent-soft: #3a1414;
+    --on-accent: #1a0505;
+    --ok: #5cc1a6;
+    --ok-soft: #0f2c27;
+    --prog: #f2c04d;
+    --prog-soft: #3a2a05;
+    --plan: #e5605f;
   }
 }
 
@@ -42,134 +56,165 @@ html, body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  /* -apple-system = the iPhone's own font (San Francisco) */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.4;
   -webkit-text-size-adjust: 100%;
 }
 
-/* ---------- Top bar ---------- */
-
-.top-bar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg);
-  /* env(safe-area-inset-top) = extra space so we don't sit under the notch */
-  padding: calc(env(safe-area-inset-top) + 12px) 16px 8px;
-}
-
-.top-bar h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 700;
-}
-
-/* ---------- Main content area ---------- */
+a { color: var(--accent); }
 
 main {
-  padding: 8px 16px;
-  /* leave room at the bottom so the tab bar doesn't cover content */
-  padding-bottom: calc(env(safe-area-inset-bottom) + 90px);
-  max-width: 700px;
+  max-width: 600px;
   margin: 0 auto;
+  /* top: room for the notch; bottom: room for the tab bar */
+  padding: calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 100px);
 }
+
+/* ---------- Screen headers ---------- */
+
+.header { position: relative; margin-bottom: 16px; }
+.eyebrow {
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  letter-spacing: .02em; text-transform: uppercase;
+}
+.eyebrow a { color: var(--accent); text-decoration: none; text-transform: none; font-size: 15px; }
+h1 { font-size: 30px; margin: 2px 0 0; letter-spacing: -.02em; line-height: 1.15; }
+.subtitle { font-size: 17px; margin-top: 4px; }
+
+/* round icon button (the Settings gear) */
+.icon-btn {
+  position: absolute; right: 0; top: 0;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface); display: grid; place-items: center;
+}
+.icon-btn svg { width: 19px; height: 19px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+
+/* ---------- Cards, tiles, sections ---------- */
+
+.card { background: var(--surface); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.card p { margin: 0 0 8px; }
+.card p:last-child { margin-bottom: 0; }
+
+.section-h { display: flex; justify-content: space-between; align-items: baseline; margin: 20px 4px 8px; }
+.section-h h2 { font-size: 17px; margin: 0; }
+.section-h a { font-size: 14px; text-decoration: none; }
+
+.muted { color: var(--muted); font-size: 14px; }
+.small { font-size: 13px; }
+
+.hero { display: flex; gap: 16px; align-items: center; }
+.ring { width: 96px; height: 96px; flex: none; }
+.big { font-size: 28px; font-weight: 700; letter-spacing: -.02em; }
+
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.tile { background: var(--surface); border-radius: 14px; padding: 12px; }
+.tile b { display: block; font-size: 20px; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 12px; color: var(--muted); }
+
+.insight { background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; font-size: 14px; margin-bottom: 12px; }
+.insight b { color: var(--accent); }
+
+.bar { height: 8px; border-radius: 99px; background: var(--surface2); overflow: hidden; margin: 6px 0 2px; }
+.bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+/* ---------- Lists (like iPhone Settings) ---------- */
+
+.list { background: var(--surface); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+.row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line);
+  color: inherit; text-decoration: none;
+}
+.row:last-child { border-bottom: 0; }
+.row .main { flex: 1; min-width: 0; }
+.row .code { font-weight: 600; font-size: 15px; }
+.row .title { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .chev { color: var(--muted); }
+
+/* ---------- Pills and tags ---------- */
+
+.pill { font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+.pill.completed { background: var(--ok-soft); color: var(--ok); }
+.pill.in-progress { background: var(--prog-soft); color: var(--prog); }
+.pill.planned, .pill.neutral { background: var(--surface2); color: var(--muted); }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+.tag { text-decoration: none; font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 99px; background: var(--surface); color: var(--muted); }
+
+/* ---------- Plan screen ---------- */
+
+.seg { display: flex; background: var(--surface2); border-radius: 10px; padding: 2px; margin-bottom: 16px; }
+.seg a { flex: 1; text-align: center; font-size: 13px; font-weight: 600; padding: 6px 2px; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.seg a.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+
+.quarter { margin-bottom: 14px; }
+.quarter-h { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 4px 6px; text-transform: uppercase; }
+.chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.chip {
+  background: var(--surface); border-radius: 10px; padding: 8px 10px;
+  font-size: 13px; font-weight: 600; color: var(--text); text-decoration: none;
+  border-left: 3px solid var(--plan); min-width: 0;
+}
+.chip small { display: block; font-weight: 500; color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip.completed { border-left-color: var(--ok); }
+.chip.in-progress { border-left-color: var(--prog); }
+.chip.add { border: 1.5px dashed var(--line); color: var(--accent); background: transparent; display: grid; place-items: center; min-height: 48px; }
+
+/* ---------- Course page ---------- */
+
+.description { font-size: 15px; line-height: 1.55; color: var(--muted); }
+.tree { font-size: 14px; line-height: 1.9; }
+.tree .lbl { font-weight: 600; }
+.tree .node { padding-left: 14px; border-left: 2px solid var(--line); margin-left: 6px; }
+
+/* ---------- Forms and buttons ---------- */
+
+.field { display: block; margin-bottom: 14px; }
+.field > span { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+input, select {
+  width: 100%; padding: 11px 12px;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface2); color: var(--text);
+  font-size: 16px; /* 16px+ stops iPhone from zooming in */
+  font-family: inherit; appearance: none; -webkit-appearance: none;
+}
+/* dropdowns get a small arrow on the right */
+select {
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b7280' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 12px 8px;
+}
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.search { position: sticky; top: 0; z-index: 5; padding: 8px 0; background: var(--bg); }
+.search input { background: var(--surface); }
+
+.btn {
+  display: block; width: 100%; text-align: center; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--on-accent);
+  font-family: inherit; font-size: 16px; font-weight: 600; line-height: 1;
+  border-radius: 14px; padding: 15px; margin-top: 12px; text-decoration: none;
+}
+.btn.secondary { background: var(--surface); color: var(--accent); }
+.btn.danger { background: transparent; color: var(--accent); }
+
+.empty { text-align: center; padding: 28px 16px; }
 
 /* ---------- Bottom tab bar ---------- */
 
 .tab-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 equal-width tabs */
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom); /* space for the iPhone home bar */
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
 }
-
 .tab-bar a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 8px 0 6px;
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 11px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 0 6px; color: var(--muted); text-decoration: none; font-size: 11px;
   -webkit-tap-highlight-color: transparent;
 }
-
-.tab-bar svg {
-  width: 26px;
-  height: 26px;
-  fill: none;
-  stroke: currentColor; /* icon uses the same color as the label */
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* The tab you're on is highlighted (app.js adds the "active" class) */
+.tab-bar svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .tab-bar a.active { color: var(--accent); }
-
-/* ---------- Cards ---------- */
-
-.card {
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-}
-
-.card h2 { margin: 0 0 8px; font-size: 20px; }
-.card h3 { margin: 0 0 4px; font-size: 15px; color: var(--muted); font-weight: 600; }
-.card p  { margin: 0 0 8px; }
-.card p:last-child { margin-bottom: 0; }
-
-.muted { color: var(--muted); font-size: 14px; }
-
-.big-number {
-  font-size: 40px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-/* "Coming in Step N" label on placeholder screens */
-.badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-/* ---------- Forms ---------- */
-
-.field { display: block; margin-bottom: 12px; }
-.field > span { display: block; font-size: 14px; color: var(--muted); margin-bottom: 4px; }
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--text);
-  /* 16px or bigger stops iPhone from zooming in when you tap a box */
-  font-size: 16px;
-  font-family: inherit;
-}
-
-input:focus, select:focus, textarea:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-
-.status-ok { color: var(--success); }
-.status-error { color: var(--accent); }

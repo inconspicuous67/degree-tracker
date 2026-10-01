@@ -1,47 +1,70 @@
 /*
-  views/settings.js — the Settings tab.
-  Step 1: one real setting (units needed to graduate) so we can prove that
-  saving works. Later steps add import/export, demo data, and "clear all".
+  views/settings.js — the Settings screen (opened from the gear on Home).
 */
 
-export function render(container, app) {
-  container.innerHTML = `
-    <section class="card">
-      <h2>Graduation</h2>
-      <label class="field">
-        <span>Units needed to graduate</span>
-        <input id="units-needed" type="number" inputmode="numeric" min="1" step="1"
-               placeholder="From the Stanford Bulletin">
-      </label>
-      <p class="muted">Enter this from the Stanford Bulletin or your degree
-         progress report. The app never guesses it.</p>
-      <p id="save-status" class="muted" aria-live="polite"></p>
-    </section>
+import { emptyData } from '../storage.js';
+import { currentTerm } from '../terms.js';
 
-    <section class="card">
-      <h2>Your data</h2>
+export function render(container, app) {
+  const { settings } = app.data;
+  const now = currentTerm().year;
+  const years = [];
+  for (let y = now - 6; y <= now + 1; y++) years.push(y);
+
+  container.innerHTML = `
+    <div class="header">
+      <div class="eyebrow"><a href="#home">‹ Home</a></div>
+      <h1>Settings</h1>
+    </div>
+
+    <div class="card">
+      <label class="field"><span>Units needed to graduate</span>
+        <input id="units-needed" type="number" inputmode="numeric" min="1" step="1"
+               placeholder="From the Stanford Bulletin"></label>
+      <label class="field"><span>First Autumn at Stanford</span>
+        <select id="start-year">
+          <option value="">Not set</option>
+          ${years.map((y) => `<option value="${y}" ${settings.startYear === y ? 'selected' : ''}>Autumn ${y}</option>`).join('')}
+        </select></label>
+      <p class="muted">Enter units from the Stanford Bulletin or your degree progress report.
+        The app never guesses it. Your first year labels the Plan tabs Year 1–4.</p>
+      <p id="save-status" class="muted" aria-live="polite"></p>
+    </div>
+
+    <div class="section-h"><h2>Your data</h2></div>
+    <div class="card">
       <p>Everything is saved on this phone only. No account, no server.</p>
-    </section>
+      <p class="muted">${app.data.classes.length} classes saved.</p>
+      <button class="btn danger" id="clear">Erase all my data</button>
+    </div>
+
+    <p class="muted small">Course information from Stanford ExploreCourses (2026–27).
+      Not an official Stanford app. Always confirm with your degree progress report.</p>
   `;
 
-  const input = container.querySelector('#units-needed');
+  const units = container.querySelector('#units-needed');
+  const startYear = container.querySelector('#start-year');
   const status = container.querySelector('#save-status');
+  units.value = settings.unitsNeeded ?? '';
 
-  // Show what's already saved (or an empty box)
-  input.value = app.data.settings.unitsNeeded ?? '';
+  function saved() {
+    status.textContent = app.save() ? 'Saved ✓' : "Couldn't save. Your phone's storage may be full.";
+  }
 
-  // Every time you type, update the data and save it right away
-  input.addEventListener('input', () => {
-    const number = parseInt(input.value, 10);
-    // Only keep sensible whole numbers; anything else means "not set"
-    app.data.settings.unitsNeeded = number > 0 ? number : null;
+  units.addEventListener('input', () => {
+    const n = parseInt(units.value, 10);
+    settings.unitsNeeded = n > 0 ? n : null;
+    saved();
+  });
+  startYear.addEventListener('change', () => {
+    settings.startYear = startYear.value ? Number(startYear.value) : null;
+    saved();
+  });
 
-    if (app.save()) {
-      status.textContent = 'Saved ✓';
-      status.className = 'muted status-ok';
-    } else {
-      status.textContent = "Couldn't save. Your phone's storage may be full.";
-      status.className = 'muted status-error';
-    }
+  container.querySelector('#clear').addEventListener('click', () => {
+    if (!confirm('Erase all your classes and settings from this phone? This cannot be undone.')) return;
+    app.data = emptyData();
+    app.save();
+    app.go('#home');
   });
 }

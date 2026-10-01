@@ -20,17 +20,24 @@ When you "Add to Home Screen" on iPhone, the website becomes an app icon and ope
 
 ```
 degree-tracker/
-├── index.html          ← the one page; holds the top bar and the tab bar
-├── css/styles.css      ← all colors and layout (light + dark mode)
-├── js/app.js           ← the "brain": loads data, switches tabs
-├── js/storage.js       ← saving and loading your data on the phone
-├── js/utils.js         ← small shared helpers
-└── js/views/           ← one file per tab; each one draws its own screen
-    ├── home.js
-    ├── classes.js
-    ├── requirements.js
-    ├── catalog.js
-    └── settings.js
+├── index.html            ← the one page; holds the bottom tab bar
+├── css/styles.css        ← all colors and layout (light + dark mode)
+├── js/app.js             ← the "brain": loads data, picks the screen from the address
+├── js/storage.js         ← saving and loading your data on the phone
+├── js/catalog.js         ← loading and searching Stanford's course catalog
+├── js/terms.js           ← quarter helpers (Autumn 2026, academic years...)
+├── js/gpa.js             ← grade points, units earned, GPA
+├── js/utils.js           ← small shared helpers (escapeHtml, Ways names)
+├── js/views/             ← one file per screen; each draws itself
+│   ├── home.js           ← "Where I stand"
+│   ├── plan.js           ← four-year plan
+│   ├── requirements.js   ← (next step)
+│   ├── explore.js        ← catalog search
+│   ├── course.js         ← one course's page
+│   ├── class-form.js     ← add / edit / delete a class
+│   └── settings.js
+├── data/                 ← Stanford's 2026–27 catalog (made by the script below)
+└── scripts/fetch_catalog.py ← downloads the catalog from ExploreCourses
 ```
 
 **Rule of thumb:** if you want to change what a tab *shows*, open its file in `js/views/`. If you want to change how something *looks*, open `css/styles.css`.
@@ -107,3 +114,35 @@ Yes. Only the *code* is public. Your classes and grades are saved in your phone'
 
 ### Mistake we hit (so you can avoid it)
 **File → New Repository** creates a *new, empty* project. To use a folder that already exists, use **File → Add Local Repository**.
+
+---
+
+## Step 2 — Redesign, Stanford catalog, and the Plan
+
+### Decisions and why
+
+**1. The whole Stanford catalog is built into the app.**
+`scripts/fetch_catalog.py` asked Stanford ExploreCourses for every department's 2026–27 courses (256 departments, 15,792 courses) and saved them in `data/`. The app reads those files, so it never has to contact Stanford while you use it. **Next year:** run `python3 scripts/fetch_catalog.py 20272028` from the `degree-tracker` folder, then upload.
+
+**2. The catalog is split into a small file and many description files.**
+`data/courses.json` (codes, titles, units, quarters, Ways) loads once when you open Explore. Descriptions are big, so each subject has its own file in `data/desc/`. Only the subject you open gets downloaded. This keeps the app fast on a phone.
+
+**3. Screens are chosen by the web address.**
+Everything after `#` says which screen to show and what's on it, e.g. `#course/ME%2080?term=2026-Autumn`. (`%20` is how web addresses write a space.) This means the phone's back gesture works, and every screen has its own address.
+
+**4. Each class stores its own quarter and status.**
+A class looks like `{ code: 'ME 80', units: 4, season: 'Autumn', year: 2026, status: 'in-progress', grade: '' }`. The Plan screen just groups classes by quarter. Home adds up units and GPA from the same list. There's one list and many views of it, so nothing can get out of sync.
+
+**5. Status is suggested from the quarter.**
+Past quarter → Done, this quarter → In progress, future → Planned. You can always change it.
+
+**6. GPA lives in one file (`js/gpa.js`).**
+The grade-point table is at the top. ⚠️ Double-check it against the Stanford Registrar. If a value differs, change that one line and every GPA in the app updates.
+
+**7. Searching codes beats searching titles.**
+Typing "ME 80" shows only course codes starting with ME80. Only if no code matches does it search titles (e.g. "thermo").
+
+### Try it yourself (small changes)
+- **Add a quick-search button:** in `js/views/explore.js`, add a subject to the `QUICK` list, e.g. `'CEE'`.
+- **Change "about N quarters at X units":** the estimate is in `js/views/home.js`. Search for `estimate`.
+- **Change the Stanford red:** `--accent` at the top of `css/styles.css`.

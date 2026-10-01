@@ -4,7 +4,7 @@
 
 // Makes text safe to put inside HTML. Without this, a course title like
 // "<b>Intro" would be treated as HTML code instead of plain text.
-// RULE OF THUMB: any text that came from the user or a file goes through this.
+// RULE OF THUMB: any text from you, a file, or the catalog goes through this.
 export function escapeHtml(text) {
   return String(text ?? '')
     .replaceAll('&', '&amp;')
@@ -14,13 +14,38 @@ export function escapeHtml(text) {
     .replaceAll("'", '&#39;');
 }
 
-// Draws a simple "this tab is coming soon" card. Used until each tab
-// gets built in its step.
-export function renderComingSoon(container, step, description) {
-  container.innerHTML = `
-    <section class="card">
-      <span class="badge">Coming in Step ${step}</span>
-      <p>${escapeHtml(description)}</p>
-    </section>
-  `;
+// A unique id for a new class, e.g. "k3x9f2a1"
+export function newId() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+// Stanford's general-requirement tags as they appear in the catalog,
+// with readable names. Tags not listed here (old "GER:" ones from the
+// previous system) are hidden.
+export const REQUIREMENT_TAGS = {
+  'WAY-A-II': 'Ways: Aesthetic & Interpretive Inquiry',
+  'WAY-AQR': 'Ways: Applied Quantitative Reasoning',
+  'WAY-CE': 'Ways: Creative Expression',
+  'way_ce': 'Ways: Creative Expression',
+  'WAY-EDP': 'Ways: Exploring Difference & Power',
+  'WAY-ER': 'Ways: Ethical Reasoning',
+  'WAY-FR': 'Ways: Formal Reasoning',
+  'WAY-SI': 'Ways: Social Inquiry',
+  'WAY-SMA': 'Ways: Scientific Method & Analysis',
+  'Language': 'Language',
+  'Writing 1': 'Writing & Rhetoric 1',
+  'Writing 2': 'Writing & Rhetoric 2',
+  'Writing SLE': 'Writing (SLE)',
+  'College': 'COLLEGE',
+  'THINK': 'Thinking Matters',
+};
+
+// Short version for little tags: "WAY-FR"
+export function shortTag(tag) {
+  return tag === 'way_ce' ? 'WAY-CE' : tag;
+}
+
+// Only the tags we know how to name (drops old GER: ones).
+export function currentTags(course) {
+  return (course?.gers || []).filter((g) => g in REQUIREMENT_TAGS);
 }

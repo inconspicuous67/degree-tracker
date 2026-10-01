@@ -25,12 +25,14 @@ export function emptyData() {
   return {
     version: DATA_VERSION,
     settings: {
-      unitsNeeded: null, // total units to graduate — YOU enter this (Step 1)
+      unitsNeeded: null, // total units to graduate — YOU enter this
+      startYear: null,   // year of your first Autumn at Stanford, e.g. 2024
     },
-    terms: [],     // quarters, e.g. { id, season: 'Autumn', year: 2026 }  (Step 2)
-    classes: [],   // classes you've taken / are taking / plan to take     (Step 2)
-    programs: [],  // your major, minor, general requirements              (Step 3)
-    catalog: {},   // course descriptions, keyed by course code            (Step 5)
+    // Every class you've taken, are taking, or plan to take. One looks like:
+    // { id, code: 'ME 102', title, units: 3, grade: 'A-',
+    //   season: 'Autumn', year: 2026, status: 'completed' | 'in-progress' | 'planned' }
+    classes: [],
+    programs: [],  // your majors / general requirements (coming next step)
   };
 }
 

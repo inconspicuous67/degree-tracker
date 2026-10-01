@@ -22,6 +22,7 @@ import * as exploreView from './views/explore.js';
 import * as courseView from './views/course.js';
 import * as classFormView from './views/class-form.js';
 import * as settingsView from './views/settings.js';
+import * as programsView from './views/programs.js';
 
 // Screen name → { view file, which bottom tab to highlight }
 const screens = {
@@ -32,6 +33,7 @@ const screens = {
   course:       { view: courseView,       tab: 'explore' },
   class:        { view: classFormView,    tab: 'plan' },
   settings:     { view: settingsView,     tab: 'home' },
+  programs:     { view: programsView,     tab: 'requirements' },
 };
 
 // "app" is handed to every screen so it can read and save data.
@@ -63,6 +65,7 @@ function showCurrentScreen() {
 
   const container = document.getElementById('view');
   container.innerHTML = '';
+  container.onclick = null; // forget the previous screen's tap handler
   window.scrollTo(0, 0);
   screen.view.render(container, app, route);
 }

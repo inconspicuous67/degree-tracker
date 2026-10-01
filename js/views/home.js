@@ -5,10 +5,13 @@
 import { escapeHtml } from '../utils.js';
 import { unitsEarned, gpa } from '../gpa.js';
 import { currentTerm, termOrder, termKey, STATUS_LABELS } from '../terms.js';
+import { loadCatalog } from '../catalog.js';
+import { loadPrograms, findProgram, evaluateProgram } from '../requirements-engine.js';
+import { GENERAL_REQUIREMENTS } from '../general-reqs.js';
 
 const GEAR_ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>';
 
-export function render(container, app) {
+export async function render(container, app) {
   const { classes, settings } = app.data;
   const now = currentTerm();
 
@@ -95,14 +98,45 @@ export function render(container, app) {
         ${sum(nextClasses)} units planned.</div>` : ''}
 
     <div class="section-h"><h2>This quarter</h2><a href="#plan">Plan ›</a></div>
-    ${nowRows
-      ? `<div class="list">${nowRows}</div>`
-      : `<div class="card muted">No classes marked in progress.</div>`}
+    ${nowRows ? `<div class="list">${nowRows}</div>` : ''}
+    <a class="btn secondary" style="margin-top:0" href="#explore?term=${termKey(now.season, now.year)}">+ Add a current class</a>
 
-    <div class="section-h"><h2>Majors</h2><a href="#requirements">Reqs ›</a></div>
-    <div class="card muted">ME and MS&amp;E progress bars appear here once the
-      requirements are added (next step).</div>
+    <div class="section-h"><h2>My programs</h2><a href="#programs">Choose ›</a></div>
+    <div id="programs-card" class="card muted">Loading…</div>
   `;
+
+  // ---- Majors / minors comparison (needs the catalog + programs loaded) ----
+  await Promise.all([loadCatalog(), loadPrograms()]);
+  const chosen = settings.programs.map(findProgram).filter(Boolean);
+  const results = [...chosen, GENERAL_REQUIREMENTS].map((p) => evaluateProgram(p, classes, settings.overrides));
+  const card = container.querySelector('#programs-card');
+  if (!card) return; // you already moved to another screen
+
+  const bars = results.map((r) => {
+    const { done, total } = r.summary;
+    return `
+      <a href="#requirements/${encodeURIComponent(r.code)}" style="display:block;color:inherit;text-decoration:none;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:600">
+          <span>${escapeHtml(r.name)} <span class="muted small">${escapeHtml(r.degree)}</span></span>
+          <span class="muted" style="font-weight:500;white-space:nowrap;padding-left:8px">${done} of ${total}</span></div>
+        <div class="bar"><i style="width:${total ? (done / total) * 100 : 0}%"></i></div>
+      </a>`;
+  }).join('');
+
+  // Insight: which chosen program is closest to finished (by share of requirements done)
+  let insight = '';
+  if (chosen.length >= 2) {
+    const ranked = results.slice(0, chosen.length)
+      .map((r) => ({ r, share: r.summary.total ? r.summary.done / r.summary.total : 0 }))
+      .sort((a, b) => b.share - a.share);
+    const best = ranked[0].r;
+    insight = `<div class="insight" style="margin:4px 0 0"><b>Closest to done:</b> ${escapeHtml(best.name)}
+      (${best.degree}) — ${best.summary.total - best.summary.done} requirements left.</div>`;
+  }
+
+  card.classList.remove('muted');
+  card.innerHTML = `${chosen.length ? '' : `<p class="muted">Pick the majors and minors you're considering to compare them here.
+      <a href="#programs">Choose programs ›</a></p>`}${bars}${insight}`;
 }
 
 function sum(list) {

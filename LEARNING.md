@@ -27,17 +27,21 @@ degree-tracker/
 ├── js/catalog.js         ← loading and searching Stanford's course catalog
 ├── js/terms.js           ← quarter helpers (Autumn 2026, academic years...)
 ├── js/gpa.js             ← grade points, units earned, GPA
+├── js/requirements-engine.js ← checks your classes against requirements
+├── js/general-reqs.js    ← Stanford's Ways / Writing / Language / COLLEGE (by hand)
 ├── js/utils.js           ← small shared helpers (escapeHtml, Ways names)
 ├── js/views/             ← one file per screen; each draws itself
 │   ├── home.js           ← "Where I stand"
 │   ├── plan.js           ← four-year plan
-│   ├── requirements.js   ← (next step)
+│   ├── requirements.js   ← checklist for one program
+│   ├── programs.js       ← choose majors & minors
 │   ├── explore.js        ← catalog search
 │   ├── course.js         ← one course's page
 │   ├── class-form.js     ← add / edit / delete a class
 │   └── settings.js
-├── data/                 ← Stanford's 2026–27 catalog (made by the script below)
-└── scripts/fetch_catalog.py ← downloads the catalog from ExploreCourses
+├── data/                 ← Stanford's 2026–27 catalog + every major/minor (made by the scripts)
+├── scripts/fetch_catalog.py  ← downloads the catalog from ExploreCourses
+└── scripts/fetch_programs.py ← downloads every major/minor's requirements from the Bulletin
 ```
 
 **Rule of thumb:** if you want to change what a tab *shows*, open its file in `js/views/`. If you want to change how something *looks*, open `css/styles.css`.
@@ -146,3 +150,38 @@ Typing "ME 80" shows only course codes starting with ME80. Only if no code match
 - **Add a quick-search button:** in `js/views/explore.js`, add a subject to the `QUICK` list, e.g. `'CEE'`.
 - **Change "about N quarters at X units":** the estimate is in `js/views/home.js`. Search for `estimate`.
 - **Change the Stanford red:** `--accent` at the top of `css/styles.css`.
+
+---
+
+## Step 3 — Majors, minors, and requirements
+
+### Decisions and why
+
+**1. Requirements come from the Bulletin's own data, not retyping.**
+The Stanford Bulletin website runs on a service called Coursedog. Behind the pages, each program's requirements are stored as structured rules ("take ALL of", "take ANY of", "earn 12 units from"). `scripts/fetch_programs.py` downloads those rules for all **138 undergraduate majors and minors** and saves them in `data/programs.json`. Copying by hand would be slow and error-prone. Copying the data means every program is exactly what Stanford published.
+
+**2. Matching courses needed a shared ID.**
+The Bulletin names courses by an ID (MATH 19 = `1172271`), not by code. That ID is ExploreCourses' course ID plus offer number, so `fetch_catalog.py` now saves it, and the programs script uses it to translate IDs into codes like "MATH 19".
+
+**3. Some things are flagged instead of hidden.**
+- ME's core courses ("Depth in Discipline") are in the official data but hidden on the Bulletin website. The app shows them with a note to confirm with your advisor.
+- 316 courses mentioned across all programs aren't offered in 2026–27. For ME and MS&E, those few are only in "choose any" lists, so no requirement becomes impossible.
+- Written rules the app can't check (honors overviews, etc.) show **"Check yourself."**
+
+**4. General requirements are written by hand** (`js/general-reqs.js`), because the Bulletin publishes them as a normal page, not data. Classes match by catalog tags (WAY-SI, Writing 1, Language, College...). A class certified for two Ways counts toward only **one**, and the app chooses the assignment that fills the most slots. This is a small "matching" algorithm, in `evaluateExclusive` in `requirements-engine.js`.
+
+**5. Statuses.** Done = satisfied by completed classes. In progress = some in-progress or planned class counts. Remaining = nothing yet. **"Mark done myself"** covers AP, transfer credit and petitions, which the app can't see. Those are saved in `settings.overrides`.
+
+**6. Known simplification.** A class can count toward several requirements here (e.g. PHYSICS 41 for "Mechanics" *and* "Additional Science"). Stanford has limits on double counting, so treat the app as a guide and **confirm with your official degree progress report.**
+
+### How to update for a new school year
+```bash
+cd ~/Claude/degree-tracker
+python3 scripts/fetch_catalog.py 20272028
+python3 scripts/fetch_programs.py 2027
+```
+Then commit and push in GitHub Desktop.
+
+### Try it yourself
+- **Add a general requirement:** copy one of the `{ type: 'tags', ... }` lines in `js/general-reqs.js` and change the name, tag and count.
+- **Change the short label** in the Reqs switcher (e.g. "MS&E"): see `shortName()` at the bottom of `js/views/requirements.js`.

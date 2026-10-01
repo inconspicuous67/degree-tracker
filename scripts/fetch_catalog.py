@@ -66,7 +66,12 @@ def courses_for(dept):
         typical = [a.findtext('description') for a in el.iterfind('attributes/attribute')
                    if a.findtext('name') == 'NQTR']
         gers = [g.strip() for g in (el.findtext('gers') or '').split(',') if g.strip()]
+        # The Bulletin refers to courses by this id (course id + offer number),
+        # e.g. MATH 19 = "1172271". Saved so requirements can be matched.
+        admin = 'administrativeInformation/'
+        bulletin_id = el.findtext(admin + 'courseId', '').strip() + el.findtext(admin + 'offerNumber', '').strip()
         yield {
+            'id': bulletin_id,
             'subject': el.findtext('subject', '').strip(),
             'code': el.findtext('code', '').strip(),
             'title': el.findtext('title', '').strip(),

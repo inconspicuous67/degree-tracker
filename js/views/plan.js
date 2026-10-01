@@ -5,7 +5,7 @@
 
 import { escapeHtml } from '../utils.js';
 import {
-  currentTerm, academicYearOf, academicYearLabel, quartersOf, termKey, termOrder, STATUS_LABELS,
+  currentTerm, academicYearOf, academicYearLabel, quartersOf, termKey, termOrder, STATUS_LABELS, firstAutumn,
 } from '../terms.js';
 import { gpa } from '../gpa.js';
 
@@ -14,10 +14,11 @@ export function render(container, app, route) {
   const now = currentTerm();
   const thisYear = academicYearOf(now.season, now.year);
 
-  // Which academic years to offer: from your first year (set in Settings,
-  // or your earliest class) through at least 4 years, plus any year with classes.
+  // Which academic years to offer: your four years (from your class year in
+  // Settings), plus any other year you have classes in.
+  const start = firstAutumn(settings);
   const classYears = classes.map((c) => academicYearOf(c.season, c.year));
-  const first = Math.min(settings.startYear ?? thisYear, ...classYears, thisYear);
+  const first = Math.min(start ?? thisYear, ...classYears, thisYear);
   const last = Math.max(first + 3, thisYear, ...classYears);
   const years = [];
   for (let y = first; y <= last; y++) years.push(y);
@@ -27,7 +28,7 @@ export function render(container, app, route) {
 
   const tabs = years.map((y) => `
     <a href="#plan/${y}" class="${y === shown ? 'on' : ''}">${
-      settings.startYear ? `Year ${y - settings.startYear + 1}` : academicYearLabel(y)}</a>`).join('');
+      start ? `Year ${y - start + 1}` : academicYearLabel(y)}</a>`).join('');
 
   const quarters = quartersOf(shown).map(({ season, year }) => {
     const inQuarter = classes
@@ -67,8 +68,8 @@ export function render(container, app, route) {
     </div>
     <div class="seg">${tabs}</div>
     ${quarters}
-    ${!settings.startYear ? `<p class="muted">Tip: set your first year at Stanford in
-      <a href="#settings">Settings</a> to label these Year 1–4.</p>` : ''}
+    ${!start ? `<div class="insight"><b>Set your class year</b> in
+      <a href="#settings">Settings</a> to see all four years (Year 1–4).</div>` : ''}
     <div class="section-h"><h2>Summer</h2></div>
     <p class="muted">Taking a summer class? Add it from
       <a href="#explore?term=${termKey('Summer', shown + 1)}">Explore</a> and Summer ${shown + 1} will appear above.</p>

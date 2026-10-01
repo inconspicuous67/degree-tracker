@@ -9,7 +9,7 @@ export function render(container, app) {
   const { settings } = app.data;
   const now = currentTerm().year;
   const years = [];
-  for (let y = now - 6; y <= now + 1; y++) years.push(y);
+  for (let y = now; y <= now + 5; y++) years.push(y); // possible graduating classes
 
   container.innerHTML = `
     <div class="header">
@@ -21,13 +21,13 @@ export function render(container, app) {
       <label class="field"><span>Units needed to graduate</span>
         <input id="units-needed" type="number" inputmode="numeric" min="1" step="1"
                placeholder="From the Stanford Bulletin"></label>
-      <label class="field"><span>First Autumn at Stanford</span>
-        <select id="start-year">
+      <label class="field"><span>Your class</span>
+        <select id="class-of">
           <option value="">Not set</option>
-          ${years.map((y) => `<option value="${y}" ${settings.startYear === y ? 'selected' : ''}>Autumn ${y}</option>`).join('')}
+          ${years.map((y) => `<option value="${y}" ${settings.classOf === y ? 'selected' : ''}>Class of ${y}</option>`).join('')}
         </select></label>
       <p class="muted">Enter units from the Stanford Bulletin or your degree progress report.
-        The app never guesses it. Your first year labels the Plan tabs Year 1–4.</p>
+        The app never guesses it. Your class sets up the Plan's Year 1–4.</p>
       <p id="save-status" class="muted" aria-live="polite"></p>
     </div>
 
@@ -43,7 +43,7 @@ export function render(container, app) {
   `;
 
   const units = container.querySelector('#units-needed');
-  const startYear = container.querySelector('#start-year');
+  const classOf = container.querySelector('#class-of');
   const status = container.querySelector('#save-status');
   units.value = settings.unitsNeeded ?? '';
 
@@ -56,8 +56,8 @@ export function render(container, app) {
     settings.unitsNeeded = n > 0 ? n : null;
     saved();
   });
-  startYear.addEventListener('change', () => {
-    settings.startYear = startYear.value ? Number(startYear.value) : null;
+  classOf.addEventListener('change', () => {
+    settings.classOf = classOf.value ? Number(classOf.value) : null;
     saved();
   });
 

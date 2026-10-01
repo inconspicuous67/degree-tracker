@@ -60,6 +60,11 @@ export function defaultStatus(season, year) {
   return 'planned';
 }
 
+// Your first Autumn at Stanford, from your class year (Class of 2029 → 2025).
+export function firstAutumn(settings) {
+  return settings.classOf ? settings.classOf - 4 : null;
+}
+
 export const STATUS_LABELS = {
   'completed': 'Done',
   'in-progress': 'In progress',

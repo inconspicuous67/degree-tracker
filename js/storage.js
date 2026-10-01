@@ -26,13 +26,14 @@ export function emptyData() {
     version: DATA_VERSION,
     settings: {
       unitsNeeded: null, // total units to graduate — YOU enter this
-      startYear: null,   // year of your first Autumn at Stanford, e.g. 2024
+      classOf: null,     // graduating class, e.g. 2029 (first Autumn = 2025)
+      programs: [],      // majors/minors you're considering, e.g. ['ME-BS', 'MGTSC-BS']
+      overrides: {},     // requirements you've marked done yourself (AP credit, etc.)
     },
     // Every class you've taken, are taking, or plan to take. One looks like:
     // { id, code: 'ME 102', title, units: 3, grade: 'A-',
     //   season: 'Autumn', year: 2026, status: 'completed' | 'in-progress' | 'planned' }
     classes: [],
-    programs: [],  // your majors / general requirements (coming next step)
   };
 }
 

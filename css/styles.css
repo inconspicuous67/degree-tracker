@@ -164,6 +164,10 @@ h1 { font-size: 30px; margin: 2px 0 0; letter-spacing: -.02em; line-height: 1.15
 /* ---------- Course page ---------- */
 
 .description { font-size: 15px; line-height: 1.55; color: var(--muted); }
+/* collapsed long description: 6 lines, then "Show more" */
+.description.clamped { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer; }
+.description.clamped::after { content: ''; }
+.description.clamped + p::before { content: 'Tap the description to show more · '; color: var(--muted); font-weight: 400; font-size: 13px; }
 .tree { font-size: 14px; line-height: 1.9; }
 .tree .lbl { font-weight: 600; }
 .tree .node { padding-left: 14px; border-left: 2px solid var(--line); margin-left: 6px; }

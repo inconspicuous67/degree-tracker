@@ -1,1 +1,5 @@
 .DS_Store
+# Never upload personal data: keep backup/export files out of GitHub
+*backup*.json
+*export*.json
+my-data/

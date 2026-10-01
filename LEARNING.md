@@ -79,3 +79,31 @@ Then open `http://localhost:8000` in Safari or Chrome. Press **Ctrl+C** in Termi
 - **Change the accent color:** in `css/styles.css`, change `--accent: #8c1515;` to another color (for example `#0a84ff` for blue). Save, then reload the page.
 - **Rename a tab:** in `index.html`, change `<span>Reqs</span>` to `<span>Reqs!</span>`. The page title for each tab is set in the `tabs` list in `js/app.js`.
 - **See the saved data:** on your Mac in Chrome, right-click → Inspect → Application → Local Storage → `degree-tracker-data`.
+
+---
+
+## Hosting — putting the app on the internet (free)
+
+### What we did
+- **Testing over Wi-Fi didn't work.** Campus Wi-Fi blocks devices from talking to each other, and the hotspot attempt didn't reach the Mac either. Rather than fight the network, we put the app online.
+- **GitHub** stores the project's files. **GitHub Pages** turns those files into a website at
+  `https://inconspicuous67.github.io/degree-tracker/`
+- **GitHub Desktop** is the app that uploads changes from your Mac to GitHub with buttons instead of typed commands.
+
+### Is it safe if the project is public?
+Yes. Only the *code* is public. Your classes and grades are saved in your phone's browser storage and never uploaded. Anyone who opens the link sees an empty app with *their own* blank storage. There's no login and no server, so there's nothing to break into. `.gitignore` also blocks any file named like a backup or export from ever being uploaded.
+
+### Key words
+- **Repository (repo):** a project folder that remembers its history.
+- **Commit:** a saved snapshot of the project, with a message describing it.
+- **Push / Publish:** upload your commits to GitHub.
+- **Branch `main`:** the main line of history. GitHub Pages builds the site from it.
+
+### How to upload a new version yourself (every future step)
+1. Open **GitHub Desktop**. Changed files appear under **Changes** on the left.
+2. Bottom-left: type a short summary (for example "Step 2: classes"), then click **Commit to main**.
+3. Click **Push origin** at the top.
+4. Wait 1–2 minutes, then reload the app on your phone.
+
+### Mistake we hit (so you can avoid it)
+**File → New Repository** creates a *new, empty* project. To use a folder that already exists, use **File → Add Local Repository**.
